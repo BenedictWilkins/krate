@@ -46,8 +46,21 @@ def register(name, path, force=True, **kwargs):
 
     with open(KRATE_REGISTRY_PATH, 'w') as f:
         json.dump(registry, f)
-
     return True
+
+def rename(old_name, new_name):
+    with open(KRATE_REGISTRY_PATH, 'r') as f:
+        registry = json.load(f)
+    
+    if new_name in registry:
+        raise ValueError("A dataset already exists with name: {0}".format(new_name))
+
+    registry[new_name] = registry[old_name]
+    del registry[old_name]
+
+    with open(KRATE_REGISTRY_PATH, 'w') as f:
+        json.dump(registry, f)
+
 
 def remove(name):
     """ Completely remove a dataset (including all files).
@@ -77,11 +90,6 @@ def remove(name):
 
     with open(KRATE_REGISTRY_PATH, 'w') as f:
         json.dump(reg, f)
-
-
-    
-    
-            
 
 def user_override():
     invalid = True
