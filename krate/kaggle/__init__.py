@@ -14,13 +14,16 @@ from kaggle.api.kaggle_api_extended import KaggleApi
 
 from ..registry import register, registry, user_override
 
+global api
+api = None
+
 def authenticate(username, key):
     os.environ["KAGGLE_USERNAME"] = username
     os.environ["KAGGLE_KEY"] = key
+    global api
+    if api is None:
+        api = KaggleApi()
     api.authenticate()
-
-api = KaggleApi()
-authenticate("benedictwilkinsai", "959b5f285c9be16588f97f87267be2a5")
 
 def datasets(search=None, user=None):
     return api.dataset_list(search=search)
