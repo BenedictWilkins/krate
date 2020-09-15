@@ -9,37 +9,40 @@ __author__ = "Benedict Wilkins"
 __email__ = "benrjw@gmail.com"
 __status__ = "Development"
 
-import os
-from kaggle.api.kaggle_api_extended import KaggleApi
+try: 
+    import os
+    from kaggle.api.kaggle_api_extended import KaggleApi
 
-from ..registry import register, registry, user_override
+    from ..registry import register, registry, user_override
 
-global api
-api = None
-
-def authenticate(username, key):
-    os.environ["KAGGLE_USERNAME"] = username
-    os.environ["KAGGLE_KEY"] = key
     global api
-    if api is None:
-        api = KaggleApi()
-    api.authenticate()
+    api = None
 
-def datasets(search=None, user=None):
-    return api.dataset_list(search=search)
+    def authenticate(username, key):
+        os.environ["KAGGLE_USERNAME"] = username
+        os.environ["KAGGLE_KEY"] = key
+        global api
+        if api is None:
+            api = KaggleApi()
+        api.authenticate()
 
-def download(name, path="~/.krate/", force=False, alias=None):
-    if alias is None:
-        alias = name
+    def datasets(search=None, user=None):
+        return api.dataset_list(search=search)
 
-    if path.startswith("~"):
-        path = os.path.expanduser(path)
-    path = os.path.join(path, name)
-    path = os.path.abspath(path)
-    
-    api.dataset_download_files(name, quiet=False, unzip=True, force=force, path=path)
-    register(alias, path)
+    def download(name, path="~/.krate/", force=False, alias=None):
+        if alias is None:
+            alias = name
 
-if __name__ == "__main__":
-    print(datasets('mnist'))
-    download('mnist-hd5f')
+        if path.startswith("~"):
+            path = os.path.expanduser(path)
+        path = os.path.join(path, name)
+        path = os.path.abspath(path)
+        
+        api.dataset_download_files(name, quiet=False, unzip=True, force=force, path=path)
+        register(alias, path)
+
+    if __name__ == "__main__":
+        print(datasets('mnist'))
+        download('mnist-hd5f')
+except:
+    pass 
