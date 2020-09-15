@@ -12,10 +12,14 @@ __status__ = "Development"
 import os 
 import json
 
-
 KRATE_REGISTRY_PATH = os.path.expanduser("~/.krate/.registry.json")
 
 def registry():
+    if not os.path.exists(KRATE_REGISTRY_PATH):
+        os.mkdir(os.path.split(KRATE_REGISTRY_PATH)[0])
+        with open(KRATE_REGISTRY_PATH) as f:
+            f.write("{}")
+
     with open(KRATE_REGISTRY_PATH, 'r') as f:
         registry = json.load(f)
     return registry
