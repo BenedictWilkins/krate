@@ -12,10 +12,12 @@ __status__ = "Development"
 
 from .fileio import fileio
 
-class CVImageIO(fileio):
+#TODO refactor these at some point...?
 
-    def __init__(self, ext):
-        super(CVImageIO, self).__init__(ext, 'cv2')
+class pngIO(fileio):
+
+    def __init__(self):
+        super(pngIO, self).__init__('.png', 'cv2')
 
     def save(self, file, data):
         self.cv2.imwrite(file, data)
@@ -23,19 +25,48 @@ class CVImageIO(fileio):
     def load(self, file):
         return self.cv2.imread(file)
 
-class pngIO(CVImageIO):
+class tifIO(fileio):
     def __init__(self):
-        super(pngIO, self).__init__('.png')
+        super(tifIO, self).__init__('.tif', 'cv2')
 
-class jpegIO(CVImageIO):
+    def save(self, file, data):
+        self.cv2.imwrite(file, data)
+
+    def load(self, file):
+        return self.cv2.imread(file)
+
+class jpegIO(fileio):
     def __init__(self):
-        super(jpegIO, self).__init__('.jpeg')
+        super(jpegIO, self).__init__('.jpeg', 'cv2')
+
+    def save(self, file, data):
+        self.cv2.imwrite(file, data)
+
+    def load(self, file):
+        return self.cv2.imread(file)
     
-class jpegIO2(CVImageIO):
-    def __init__(self):
-        super(jpegIO, self).__init__('.jpg')
+class jpegIO2(fileio):
 
-class bmpIO(CVImageIO):
     def __init__(self):
-        super(bmpIO, self).__init__('.bmp')
+        super(jpegIO2, self).__init__('.jpg', 'cv2')
+
+    def save(self, file, data):
+        self.cv2.imwrite(file, data)
+
+    def load(self, file):
+        return self.cv2.imread(file)
+
+class bmpIO(fileio):
+
+    def __init__(self):
+        super(bmpIO, self).__init__('.bmp', 'cv2')
+
+    def save(self, file, data):
+        self.cv2.imwrite(file, data)
+
+    def load(self, file):
+        return self.cv2.imread(file)
+
+
+
     

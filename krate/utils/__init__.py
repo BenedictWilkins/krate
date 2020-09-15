@@ -11,5 +11,6 @@ __status__ = "Development"
 
 
 from . import dict
+from . import convert
 
-__all__ = ('dict',)
+__all__ = ('dict','convert')

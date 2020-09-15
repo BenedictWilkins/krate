@@ -15,6 +15,7 @@ import datetime
 import json
 import re
 import fnmatch #unix file name matcher
+import traceback
 
 from . import fileio
 
@@ -30,6 +31,7 @@ for cls in fileio.fileio.__subclasses__():
     try:
         cls() # all valid instances should have no __init__ arguments
     except TypeError:
+        traceback.print_exc()
         pass #ignore them
 
 def load(path, **kwargs):

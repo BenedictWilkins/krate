@@ -7,7 +7,7 @@ __author__ = "Benedict Wilkins"
 __email__ = "benrjw@gmail.com"
 __status__ = "Development"
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='krate',
       version='0.0.1',
@@ -20,4 +20,5 @@ setup(name='krate',
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
       ],
-      packages=['krate'])
+      install_requires=['kaggle', 'numpy'],
+      packages=find_packages())

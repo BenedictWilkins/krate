@@ -11,6 +11,8 @@ __status__ = "Development"
 
 from .fileio import fileio
 
+import numpy as np
+
 class PickleIO(fileio):
 
     def __init__(self):

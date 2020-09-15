@@ -11,6 +11,22 @@ __status__ = "Development"
 
 from . import fileio as I
 
+class CSVIO(I.fileio):
+
+    def __init__(self):
+        super(CSVIO, self).__init__('.csv', 'csv')
+
+    def save(self, file, data, mode='w', delimiter=','):
+        with open(file, mode) as csvfile:
+            writer = self.csv.writer(csvfile, delimiter=delimiter, quotechar='\"', quoting=self.csv.QUOTE_MINIMAL)
+            writer.writerows(data)
+
+    def load(self, file, delimiter=',', mode='r'):
+        with open(file, mode) as csvfile:
+            reader = self.csv.reader(csvfile, delimiter=delimiter, quotechar='\"', quoting=self.csv.QUOTE_NONNUMERIC)
+            result = [row for row in reader]
+        return result
+               
 class TextIO(I.fileio):
 
     def __init__(self):

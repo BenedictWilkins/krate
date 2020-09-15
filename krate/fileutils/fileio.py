@@ -67,7 +67,7 @@ class fileio(ABC):
                 if not isinstance(module, (tuple, list)):
                     module = (module,)
                 try:
-                    self.__dict__[module[0].split('.')[0]] = import_module(*module)
+                    self.__dict__[module[0].split('.')[-1]] = import_module(*module)
                 except:
                     print("WARNING: failed to find module: {0}".format(module[0]))
                     return #TODO warning or something?

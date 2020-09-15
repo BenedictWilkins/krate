@@ -9,4 +9,16 @@ __author__ = "Benedict Wilkins"
 __email__ = "benrjw@gmail.com"
 __status__ = "Development"
 
-from . import fileio
+from .fileio import fileio
+
+# TODO finish this
+class WavIO(fileio):
+
+    def __init__(self):
+        super(WavIO, self).__init__('.wav', 'scipy.io.wavfile')
+    
+    def save(self, file, data):
+        raise NotImplementedError()
+
+    def load(self, file):
+        return self.wavfile.read(file)

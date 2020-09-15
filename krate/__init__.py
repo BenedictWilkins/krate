@@ -26,6 +26,27 @@ __all__ = ('kaggle', 'registry')
 
 FILE_GROUP_PATTERN = "([a-zA-Z0-9\s_\\.\-\(\):]*)\(([0-9]+)\)\.[a-zA-Z0-9\s_\\.\-\(\):]+$"
 
+class LoadGenerator:
+
+    def __init__(self, files):
+        self.__files = files
+        self.__iter = iter(files)
+
+    def __len__(self):
+        return len(self.__files)
+
+    def __iter__(self):
+        return self
+
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return self.__files[key].load()
+        else:
+            return [f.load() for f in self.__files[key]]
+
+    def __next__(self):
+        return next(self.__iter).load()
+
 class filegroup(dict):
     """ 
         A group of files that may be loaded as one, groups are indicated by file name: file(i).ext
@@ -37,8 +58,8 @@ class filegroup(dict):
     def load(self):
         #sort the group... TODO make more efficient...? (the dataset will probably only be loaded once, so this is ok?)
         sorted_files = sorted(list(self.keys()), key=lambda x:int(re.match(FILE_GROUP_PATTERN, x).group(2)))
-        for f in sorted_files:
-            yield self[f].load()
+        files = [self[f] for f in sorted_files]
+        return LoadGenerator(files)
 
     def load_as(self):
         raise NotImplementedError("TODO") #TODO
@@ -62,7 +83,6 @@ class ddict(dict):
     def __delitem__(self, k):
         super().__delitem__(k)
         del self.__dict__[k]
-
 
 class fdict(dict):
 
@@ -134,7 +154,7 @@ class DNode:
         elif k in self.files:
             return self.files[k]
         else:
-            raise KeyError("Invalid key: {0}".format(key))
+            raise KeyError("Invalid key: {0}".format(k))
 
 class FNode:
 
@@ -192,8 +212,8 @@ class Dataset(RootNode):
             for child in dirs:
                 node.dirs[child] = nodes[os.path.join(root, child)]
                 node.dirs[child]._DNode__parent = node
-
-            for file in files:
+            
+            for file in files:    
                 fnode = FNode(node, file)
                 node.files[fnode.name] = fnode
 
@@ -208,14 +228,36 @@ class Dataset(RootNode):
     @property
     def path(self):
         return self.__path
-
-    def __getitem__(self, key):
-        return self.root[key]
-            
     
 def datasets(path="~/.krate/"):
     #TODO check for registry updates? only create the dataset if it is requested
-    return __datasets__
+    return {name:Dataset(name, **kwargs) for name, kwargs in registry.registry().items()}
+
+def new(dataset, name, path="~/.krate/"):
+    """ Create a new dataset and save it to disk.
+
+    Args:
+        dataset (dict): dictionary of data, (k,v) k=file/directory path (relative), v=data/dictionary of data
+        name (str): name of the dataset
+        path (str, optional): path of the dataset. Defaults to "~/.krate/".
+    """
+   
+    def new_dir(root, dataset, indent=0):
+        assert isinstance(dataset, dict)
+        for k,v in dataset.items():
+            split = os.path.splitext(k)
+            if split[1] != '':
+                print("--"*indent, k)
+                name, ext = split
+                fileutils.save(os.path.join(root,k),v)
+            else:
+                print("--"*indent, k)
+                path = os.path.join(root, k)
+                os.makedirs(path)
+                new_dir(path, v, indent+1)
+
+    path =  os.path.expanduser(path)
+    new_dir(path, dataset)
 
 __datasets__ = {name:Dataset(name, **kwargs) for name, kwargs in registry.registry().items()}
 

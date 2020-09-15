@@ -34,6 +34,7 @@ validate_registry() #validate the registry (remove anything that has been delete
 
 def register(name, path, force=True, **kwargs):
     entry = dict(path=path, **kwargs)
+    path = os.path.expanduser(path)
     
     if not os.path.isfile(KRATE_REGISTRY_PATH): #what happend...
         with open(KRATE_REGISTRY_PATH, 'w+') as f:
