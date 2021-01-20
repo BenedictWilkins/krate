@@ -10,7 +10,26 @@ __email__ = "benrjw@gmail.com"
 __status__ = "Development"
 
 import cv2
+import numpy as np
 from .fileio import fileio
+
+class mpegIO(fileio):
+
+    def __init__(self):
+        super(mpegIO, self).__init__(".mpeg")
+
+    def save(self, file, video):
+        raise NotImplementedError("TODO")
+
+    def load(self, file, *args, frame_skip=0, **kwargs):
+        vidcap = cv2.VideoCapture(file)
+        success, image = vidcap.read()
+        images = []
+        while success:
+            images.append(image)
+            success, image = vidcap.read()
+            print(image.shape)
+        return np.array(images)
 
 class gifIO(fileio): #TODO use opencv or pill (avoid movie py dependancy)
 

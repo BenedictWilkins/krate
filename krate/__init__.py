@@ -21,6 +21,9 @@ from . import registry
 from . import fileutils
 from . import utils
 
+# convenience imports
+from .fileutils import supported_extensions
+
 
 __all__ = ('kaggle', 'registry')
 
@@ -233,13 +236,21 @@ def datasets(path="~/.krate/"):
     #TODO check for registry updates? only create the dataset if it is requested
     return {name:Dataset(name, **kwargs) for name, kwargs in registry.registry().items()}
 
+def load(name):
+    try:
+        ds = datasets()[name]
+        return ds.load()
+    except:
+        raise KeyError("Failed to find dataset, see krate.datasets() for a list of locally avaliable datasets.")
+
+
 def new(dataset, name, path="~/.krate/"):
     """ Create a new dataset and save it to disk.
 
     Args:
         dataset (dict): dictionary of data, (k,v) k=file/directory path (relative), v=data/dictionary of data
         name (str): name of the dataset
-        path (str, optional): path of the dataset. Defaults to "~/.krate/".
+        path (str, optional): path of the dataset. Defaults to "~/.krate/<name>".
     """
    
     def new_dir(root, dataset, indent=0):
