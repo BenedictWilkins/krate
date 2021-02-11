@@ -20,6 +20,7 @@ from . import kaggle
 from . import registry
 from . import fileutils
 from . import utils
+from . import transform
 
 # convenience imports
 from .fileutils import supported_extensions
@@ -244,7 +245,7 @@ def load(name):
         raise KeyError("Failed to find dataset, see krate.datasets() for a list of locally avaliable datasets.")
 
 
-def new(dataset, name, path="~/.krate/"):
+def new(dataset, name, path=None):
     """ Create a new dataset and save it to disk.
 
     Args:
@@ -266,8 +267,11 @@ def new(dataset, name, path="~/.krate/"):
                 path = os.path.join(root, k)
                 os.makedirs(path)
                 new_dir(path, v, indent+1)
-
-    path =  os.path.expanduser(path)
+                
+    if path is None:
+        path =  os.path.expanduser("~/.krate/")
+        path = os.join(path, name)
+    
     new_dir(path, dataset)
 
 __datasets__ = {name:Dataset(name, **kwargs) for name, kwargs in registry.registry().items()}
