@@ -62,7 +62,7 @@ def scale(image, scale, scaleh=None, interpolation=interpolation.nearest, mode=m
     return skimage.transform.resize(image, size, order=interpolation)
 
 def colour(image, cmap=None, mode=mode.CHW):
-    
+
     ci = mode.index("C") + len(image.shape) - 3
 
     if image.shape[ci] == 1:
@@ -72,6 +72,24 @@ def colour(image, cmap=None, mode=mode.CHW):
             raise NotImplementedError("TODO")
    
     return image # already colour? 
+
+def grey(image, components=(1/3,1/3,1/3), mode=mode.CHW): #(N)HWC format
+    """
+        TODO Docstring
+    """
+    ci = mode.index("C") + len(image.shape) - 3
+    assert image.shape[ci] in [1,3,4]           # wrong mode?
+    assert image.shape[ci] == len(components)   # wrong components?
+
+    z = np.array(components, dtype=np.float32)
+    assert len(z.shape) == 1
+
+    shape = [1] * len(image.shape)
+    shape[ci] = z.shape[0]
+    z = z.reshape(shape)
+
+    return (image * z).sum(ci, keepdims=True)
+ 
 
 '''
 def crop(image, xsize=None, ysize=None, copy=True):
@@ -100,34 +118,6 @@ def crop(image, xsize=None, ysize=None, copy=True):
     if copy:
         image = np.copy(image)
     return r(image)
-
-def grey(image, components=(0.299, 0.587, 0.114)): #(N)HW(C) format
-    """ Image(s) to grayscale
-
-    Args:
-        image (ndarray): colour image to be converted to grayscale
-        components (tuple, optional): scale components for colour channels. Defaults to (0.299, 0.587, 0.114).
-
-    Returns:
-        ndarray: gray scaled image(s)
-    """
-    image, r = nform(image)
-    assert image.shape[-1] == 3 # image must colour format
-
-    return r((image[...,0] * components[0] + image[...,1] * components[1] + image[...,2] * components[2])[...,np.newaxis].astype(image.dtype))
-
-def colour(image, components=(1,1,1)):
-    """
-    Args:
-        image ([type]): [description]
-        components (tuple, optional): [description]. Defaults to (0.299, 0.587, 0.114).
-
-    Returns:
-        [type]: [description]
-    """
-    image, r = nform(image)
-    return r(image * np.array(components)[np.newaxis, np.newaxis, np.newaxis, :])
-
 
 ### BELOW ONLY WORK FOR A SINGLE IMAGE - TODO
 

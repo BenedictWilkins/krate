@@ -18,6 +18,8 @@ from tqdm import tqdm
 def cv_load(file, *args, progress=True, **kwargs): # loads a video file using opencv
     vidcap = cv2.VideoCapture(file)
     success, image = vidcap.read()
+    print("FRAME_RATE: ", vidcap.get(cv2.CAP_PROP_FPS))
+
     images = []
     def frame_gen():   
         success = True 
@@ -27,7 +29,7 @@ def cv_load(file, *args, progress=True, **kwargs): # loads a video file using op
                 yield np.array(image)
 
     gen = frame_gen()
-
+    
     if progress:
         frame_count = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT)) #estimate is good enough for tdqm
         gen = tqdm(gen, total=frame_count)
@@ -39,6 +41,17 @@ class mpegIO(fileio):
 
     def __init__(self):
         super(mpegIO, self).__init__(".mpeg")
+
+    def save(self, file, video):
+        raise NotImplementedError("TODO")
+
+    def load(self, file, *args,**kwargs):
+        return cv_load(file, *args, **kwargs)
+
+class tsIO(fileio):
+
+    def __init__(self):
+        super(tsIO, self).__init__(".ts")
 
     def save(self, file, video):
         raise NotImplementedError("TODO")
@@ -59,6 +72,9 @@ class mp4IO(fileio):
         elif issubclass(video.dtype.type, np.floating):
             raise ValueError("Video must be in integer [0-255] format")
         
+        if video[-1] != 3:
+            raise ValueError("Video must be in NHWC format with 3 channels (RGB)")
+
         #video must be CV format (NHWC)
         colour = len(video.shape) == 4 and video.shape[-1] == 3
         fourcc = cv2.VideoWriter_fourcc(*'mp4v') #ehhh.... platform specific?
