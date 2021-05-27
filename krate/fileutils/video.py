@@ -72,7 +72,7 @@ class mp4IO(fileio):
         elif issubclass(video.dtype.type, np.floating):
             raise ValueError("Video must be in integer [0-255] format")
         
-        if video[-1] != 3:
+        if video.shape[-1] != 3:
             raise ValueError("Video must be in NHWC format with 3 channels (RGB)")
 
         #video must be CV format (NHWC)
