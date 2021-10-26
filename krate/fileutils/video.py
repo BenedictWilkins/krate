@@ -10,6 +10,7 @@ __email__ = "benrjw@gmail.com"
 __status__ = "Development"
 
 import cv2
+import numpy as np
 from .fileio import fileio
 
 class gifIO(fileio): #TODO use opencv or pill (avoid movie py dependancy)
@@ -39,6 +40,7 @@ class mp4IO(fileio):
         super(mp4IO, self).__init__('.mp4', 'cv2')
 
     def save(self, file, video, fps=24):
+        # might be better to use skvideo??? 
         #TODO ensure NHWC format
         if issubclass(video.dtype.type, np.integer):
             if video.dtype.type != np.uint8:
@@ -55,10 +57,13 @@ class mp4IO(fileio):
             writer.write(frame)
     
     def load(self, file):
-        raise NotImplementedError("TODO!")
+        import skvideo.io  #TODO fix...
+        videodata = skvideo.io.vread(file)  
+        #print(videodata.shape)
+        return videodata
+
 
 #TODO
-
 def __save_avi(file):
     raise NotImplementedError("TODO!")
 

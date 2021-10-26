@@ -12,5 +12,6 @@ __status__ = "Development"
 
 from . import dict
 from . import convert
+from . import tree
 
-__all__ = ('dict','convert')
+__all__ = ('dict','convert', 'tree')

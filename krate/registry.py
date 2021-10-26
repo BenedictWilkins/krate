@@ -15,8 +15,8 @@ import json
 KRATE_REGISTRY_PATH = os.path.expanduser("~/.krate/.registry.json")
 
 def registry():
-    if not os.path.exists(os.path.split(KRATE_REGISTRY_PATH)[0]):
-        os.mkdir(os.path.split(KRATE_REGISTRY_PATH)[0])
+    if not os.path.exists(KRATE_REGISTRY_PATH):
+        os.makedirs(KRATE_REGISTRY_PATH)
         with open(KRATE_REGISTRY_PATH, 'w') as f:
             f.write("{}")
 
