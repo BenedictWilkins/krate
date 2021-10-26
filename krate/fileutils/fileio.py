@@ -46,6 +46,7 @@ class fileio(ABC):
     __instances__ = {}
 
     def __new__(cls, *args, **kwargs):
+        #print("NEW", cls)
         instance  = fileio.__instances__.get(cls, None)
         if instance is None:
             instance = super().__new__(cls, *args, **kwargs)
@@ -53,6 +54,7 @@ class fileio(ABC):
         return instance
 
     def __init__(self, ext, *modules):
+        #print("INIT", ext, modules)
         """ Create a new fileio object (which is a singleton).
 
         Args:
@@ -62,6 +64,7 @@ class fileio(ABC):
         """
         if ext not in fileio.io: #dont reload the class
             self.ext = ext
+            fileio.io[self.ext] = self 
             
             for module in modules:
                 if not isinstance(module, (tuple, list)):
@@ -71,10 +74,8 @@ class fileio(ABC):
                 except:
                     print("WARNING: failed to find module: {0}".format(module[0]))
                     return #TODO warning or something?
-
-                fileio.io[self.ext] = self 
         else:
-            self.__dict__ = fileio.io[ext].__dict__
+            self.__dict__ = fileio.io[ext].__dict__ # TODO this needs a rethink
 
     @abstractmethod
     def save(self, *args, **kwargs):
@@ -84,3 +85,6 @@ class fileio(ABC):
     def load(self, *args, **kwargs):
         pass
 
+
+def supported_extensions():
+    return list(fileio.io.keys())

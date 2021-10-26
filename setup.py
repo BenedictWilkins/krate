@@ -20,5 +20,5 @@ setup(name='krate',
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
       ],
-      install_requires=['kaggle', 'numpy'],
+      install_requires=['kaggle', 'numpy', 'tqdm', 'scikit-image'],
       packages=find_packages())

@@ -12,7 +12,8 @@ __status__ = "Development"
 import os 
 import json
 
-KRATE_REGISTRY_PATH = os.path.expanduser("~/.krate/.registry.json")
+KRATE_DEFAULT_PATH = os.path.normpath(os.path.expanduser("~/.krate/"))
+KRATE_REGISTRY_PATH = os.path.join(KRATE_DEFAULT_PATH, ".registry.json")
 
 def registry():
     if not os.path.exists(KRATE_REGISTRY_PATH):
@@ -37,9 +38,16 @@ def validate_registry():
 validate_registry() #validate the registry (remove anything that has been deleted)
 
 def register(name, path, force=True, **kwargs):
-    entry = dict(path=path, **kwargs)
     path = os.path.expanduser(path)
-    
+
+    if not os.path.exists(path): # try looking in default location .krate
+        dpath = os.path.normpath(os.path.join(KRATE_DEFAULT_PATH, path))
+        if not os.path.exists(dpath):
+            raise OSError("Failed to find dataset directory: {0}".format(path))
+        path = dpath
+
+    entry = dict(path=path, **kwargs)
+
     if not os.path.isfile(KRATE_REGISTRY_PATH): #what happend...
         with open(KRATE_REGISTRY_PATH, 'w+') as f:
             json.dump(dict())

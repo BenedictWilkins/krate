@@ -22,6 +22,10 @@ from . import kaggle
 from . import registry
 from . import fileutils
 from . import utils
+from . import transform
+
+# convenience imports
+from .fileutils import supported_extensions
 
 from .registry import register
 
@@ -46,6 +50,7 @@ def dataset(name):
 
 
 
+
 # TOOD refactor?
 def new(dataset, name, path="~/.krate/"):
     """ Create a new dataset and save it to disk.
@@ -53,7 +58,7 @@ def new(dataset, name, path="~/.krate/"):
     Args:
         dataset (dict): dictionary of data, (k,v) k=file/directory path (relative), v=data/dictionary of data
         name (str): name of the dataset
-        path (str, optional): path of the dataset. Defaults to "~/.krate/".
+        path (str, optional): path of the dataset. Defaults to "~/.krate/<name>".
     """
    
     def new_dir(root, dataset, indent=0):
@@ -69,8 +74,11 @@ def new(dataset, name, path="~/.krate/"):
                 path = os.path.join(root, k)
                 os.makedirs(path)
                 new_dir(path, v, indent+1)
-
-    path =  os.path.expanduser(path)
+                
+    if path is None:
+        path =  os.path.expanduser("~/.krate/")
+        path = os.join(path, name)
+    
     new_dir(path, dataset)
 
 

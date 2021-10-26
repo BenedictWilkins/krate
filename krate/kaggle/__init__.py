@@ -11,6 +11,7 @@ __status__ = "Development"
 
 try: 
     import os
+    import json
     from kaggle.api.kaggle_api_extended import KaggleApi
 
     from ..registry import register, registry, user_override
@@ -18,9 +19,19 @@ try:
     global api
     api = None
 
-    def authenticate(username, key):
-        os.environ["KAGGLE_USERNAME"] = username
-        os.environ["KAGGLE_KEY"] = key
+    def authenticate(username=None, key=None):
+        if username is None or key is None:
+            # read ~/.kaggle/kaggle.json
+            path = os.path.expanduser("~")
+            path = os.path.join(path, ".kaggle\kaggle.json")    
+            try:
+                with open(path, "r") as fp:
+                    cred = json.load(fp)
+                    os.environ["KAGGLE_USERNAME"] = cred['username']
+                    os.environ["KAGGLE_KEY"] = cred['key']
+            except:
+                raise ValueError("Failed to initialise kaggle, failed to find api key.")
+
         global api
         if api is None:
             api = KaggleApi()
@@ -45,4 +56,4 @@ try:
         print(datasets('mnist'))
         download('mnist-hd5f')
 except:
-    pass 
+    print("Failed to initialise kaggle.") 

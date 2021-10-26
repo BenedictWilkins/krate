@@ -18,6 +18,7 @@ import fnmatch #unix file name matcher
 import traceback
 
 from . import fileio
+from .fileio import supported_extensions
 
 from . import text
 from . import image
